@@ -4,8 +4,6 @@ import org.apache.apex.api.Launcher;
 import org.apache.apex.api.YarnAppLauncher;
 import org.apache.hadoop.conf.Configuration;
 
-import javax.validation.ConstraintViolationException;
-
 public class Main
 {
     public static void main(String[] args) throws Exception

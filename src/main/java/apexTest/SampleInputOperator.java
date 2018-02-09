@@ -14,22 +14,20 @@ import org.slf4j.LoggerFactory;
 /**
  * This is a simple operator that emits random number.
  */
-public class RandomNumberGenerator extends BaseOperator implements InputOperator, Operator.CheckpointNotificationListener
+public class SampleInputOperator extends BaseOperator implements InputOperator, Operator.CheckpointNotificationListener
 {
   private transient int count = 0;
-  private static final Logger logger = LoggerFactory.getLogger(RandomNumberGenerator.class);
+  private static final Logger logger = LoggerFactory.getLogger(SampleInputOperator.class);
   public final transient DefaultOutputPort<Long> out = new DefaultOutputPort<Long>();
   private long latestWindowId;
   private long lastCommitedWindowId;
   private long lastCheckpointedWindowId;
-  private long commitedWindowCount;
 
   @Override
   public void setup(Context.OperatorContext context)
   {
     super.setup(context);
-    commitedWindowCount = 0;
-    logger.info("!!!Setup " + lastCheckpointedWindowId + "\n");
+    logger.info("Setup " + lastCheckpointedWindowId + "\n");
   }
 
   @Override

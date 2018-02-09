@@ -5,12 +5,11 @@ package apexTest;
 
 import org.apache.hadoop.conf.Configuration;
 
-import com.datatorrent.api.annotation.ApplicationAnnotation;
-import com.datatorrent.api.StreamingApplication;
 import com.datatorrent.api.DAG;
-import com.datatorrent.api.DAG.Locality;
+import com.datatorrent.api.StreamingApplication;
+import com.datatorrent.api.annotation.ApplicationAnnotation;
 
-@ApplicationAnnotation(name="MyFifthApplication")
+@ApplicationAnnotation(name = "ApexApplication")
 public class Application implements StreamingApplication
 {
 
@@ -20,11 +19,10 @@ public class Application implements StreamingApplication
     // Sample DAG with 2 operators
     // Replace this code with the DAG you want to build
 
-    RandomNumberGenerator randomGenerator = dag.addOperator("randomGenerator", RandomNumberGenerator.class);
-    randomGenerator.setNumTuples(500);
+    SampleInputOperator sampleInput = dag.addOperator("sampleInput", SampleInputOperator.class);
 
     Collector collector = dag.addOperator("collector", new Collector());
 
-    dag.addStream("randomData", randomGenerator.out, collector.input);
+    dag.addStream("randomData", sampleInput.out, collector.input);
   }
 }
