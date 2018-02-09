@@ -3,15 +3,12 @@
  */
 package apexTest;
 
-import org.apache.apex.api.Launcher;
-import org.apache.apex.api.YarnAppLauncher;
 import org.apache.hadoop.conf.Configuration;
 
 import com.datatorrent.api.annotation.ApplicationAnnotation;
 import com.datatorrent.api.StreamingApplication;
 import com.datatorrent.api.DAG;
 import com.datatorrent.api.DAG.Locality;
-import com.datatorrent.lib.io.ConsoleOutputOperator;
 
 @ApplicationAnnotation(name="MyFifthApplication")
 public class Application implements StreamingApplication
@@ -26,9 +23,8 @@ public class Application implements StreamingApplication
     RandomNumberGenerator randomGenerator = dag.addOperator("randomGenerator", RandomNumberGenerator.class);
     randomGenerator.setNumTuples(500);
 
-    ConsoleOutputOperator cons = dag.addOperator("console", new ConsoleOutputOperator());
-    cons.silent = true;
+    Collector collector = dag.addOperator("collector", new Collector());
 
-    dag.addStream("randomData", randomGenerator.out, cons.input).setLocality(Locality.CONTAINER_LOCAL);
+    dag.addStream("randomData", randomGenerator.out, collector.input);
   }
 }

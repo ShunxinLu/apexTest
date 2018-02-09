@@ -8,6 +8,8 @@ import com.datatorrent.api.DefaultOutputPort;
 import com.datatorrent.api.InputOperator;
 import com.datatorrent.api.Operator;
 import com.datatorrent.common.util.BaseOperator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a simple operator that emits random number.
@@ -16,16 +18,19 @@ public class RandomNumberGenerator extends BaseOperator implements InputOperator
 {
   private int numTuples = 100;
   private transient int count = 0;
-
-  public final transient DefaultOutputPort<Double> out = new DefaultOutputPort<Double>();
-  private long latestWindowId = 0;
-  private long lastCommitedWindowId = 0;
+  private static final Logger logger = LoggerFactory.getLogger(RandomNumberGenerator.class);
+  public final transient DefaultOutputPort<Long> out = new DefaultOutputPort<Long>();
+  private long latestWindowId;
+  private long lastCommitedWindowId;
+  private long lastCheckpointedWindowId;
+  private long commitedWindowCount;
 
   @Override
   public void setup(Context.OperatorContext context)
   {
-
     super.setup(context);
+    commitedWindowCount = 0;
+    logger.info("!!!Setup " + lastCheckpointedWindowId + "\n");
   }
 
   @Override
@@ -33,21 +38,23 @@ public class RandomNumberGenerator extends BaseOperator implements InputOperator
   {
     count = 0;
     latestWindowId = windowId;
-    System.out.println("\n----------windowID is " + windowId + "\n");
+    logger.info("\n----------windowID is " + windowId + "\n");
   }
 
   @Override
   public void teardown() {
-    System.out.println("+++++++++++++Final window id is " + latestWindowId + "\n");
-    System.out.println("+++++++++++++Last commited window id is " + lastCommitedWindowId + "\n\n\n");
+    logger.info("+++++++++++++Final window id is " + latestWindowId + "\n");
+    logger.info("+++++++++++++Last commited window id is " + lastCommitedWindowId + "\n\n\n");
+    logger.info("+++++++++++++Last checkpointed window id is " + lastCheckpointedWindowId + "\n\n\n");
     super.teardown();
   }
 
   @Override
   public void emitTuples()
   {
-    if (count++ < numTuples) {
-      out.emit(Math.random());
+    if (count++ == 0) {
+      out.emit(latestWindowId);
+      logger.info("......Emitting " + latestWindowId + "\n");
     }
   }
 
@@ -73,13 +80,18 @@ public class RandomNumberGenerator extends BaseOperator implements InputOperator
   @Override
   public void checkpointed(long l)
   {
-    System.out.println("\n?????????????windowID " + l + " is checkpointed\n");
+    lastCheckpointedWindowId = l;
+    logger.info("\n?????????????windowID " + l + " is checkpointed\n");
   }
 
   @Override
   public void committed(long l)
   {
     lastCommitedWindowId = l;
-    System.out.println("\n!!!!!!!!!!!windowID " + l + " is commited\n");
+    logger.info("\n!!!!!!!!!!!windowID " + l + " is committed\n");
+    logger.info("committed window count is {}", commitedWindowCount);
+    if (commitedWindowCount++ == 5) {
+      throw new ShutdownException();
+    }
   }
 }
