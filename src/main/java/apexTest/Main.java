@@ -11,10 +11,14 @@ public class Main
     public static void main(String[] args) throws Exception
     {
         YarnAppLauncher launcher = Launcher.getLauncher(Launcher.LaunchMode.YARN);
-        //Launcher launcher = Launcher.getLauncher(Launcher.LaunchMode.EMBEDDED);
         Configuration conf = new Configuration(true);
         conf.addResource("/META-INF/properties.xml");
-        //conf.set("_apex.originalAppId", "application_1516696268094_0559");
+
+        /** Uncomment the following line and replace the "appId_for_app_to_restart" with actual app Id to restart
+         * an application. Leave it as a comment will launch a new instance of the app.
+         */
+        //conf.set("_apex.originalAppId", appId_for_app_to_restart);
+
         launcher.launchApp(new Application(), conf);
     }
 }

@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
  */
 public class RandomNumberGenerator extends BaseOperator implements InputOperator, Operator.CheckpointNotificationListener
 {
-  private int numTuples = 100;
   private transient int count = 0;
   private static final Logger logger = LoggerFactory.getLogger(RandomNumberGenerator.class);
   public final transient DefaultOutputPort<Long> out = new DefaultOutputPort<Long>();
@@ -38,14 +37,13 @@ public class RandomNumberGenerator extends BaseOperator implements InputOperator
   {
     count = 0;
     latestWindowId = windowId;
-    logger.info("\n----------windowID is " + windowId + "\n");
   }
 
   @Override
   public void teardown() {
-    logger.info("+++++++++++++Final window id is " + latestWindowId + "\n");
-    logger.info("+++++++++++++Last commited window id is " + lastCommitedWindowId + "\n\n\n");
-    logger.info("+++++++++++++Last checkpointed window id is " + lastCheckpointedWindowId + "\n\n\n");
+    logger.info("Final window id is {}", latestWindowId);
+    logger.info("Last commited window id is {}", lastCommitedWindowId);
+    logger.info("Last checkpointed window id is {}", lastCheckpointedWindowId);
     super.teardown();
   }
 
@@ -54,7 +52,6 @@ public class RandomNumberGenerator extends BaseOperator implements InputOperator
   {
     if (count++ == 0) {
       out.emit(latestWindowId);
-      logger.info("......Emitting " + latestWindowId + "\n");
     }
   }
 
@@ -63,35 +60,15 @@ public class RandomNumberGenerator extends BaseOperator implements InputOperator
 
   }
 
-  public int getNumTuples()
-  {
-    return numTuples;
-  }
-
-  /**
-   * Sets the number of tuples to be emitted every window.
-   * @param numTuples number of tuples
-   */
-  public void setNumTuples(int numTuples)
-  {
-    this.numTuples = numTuples;
-  }
-
   @Override
   public void checkpointed(long l)
   {
     lastCheckpointedWindowId = l;
-    logger.info("\n?????????????windowID " + l + " is checkpointed\n");
   }
 
   @Override
   public void committed(long l)
   {
     lastCommitedWindowId = l;
-    logger.info("\n!!!!!!!!!!!windowID " + l + " is committed\n");
-    logger.info("committed window count is {}", commitedWindowCount);
-    if (commitedWindowCount++ == 5) {
-      throw new ShutdownException();
-    }
   }
 }

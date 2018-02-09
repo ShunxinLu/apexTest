@@ -20,19 +20,21 @@ public class Collector extends BaseOperator implements Operator.CheckpointNotifi
     };
 
     @Override
-    public void setup(Context.OperatorContext context) {
+    public void setup(Context.OperatorContext context)
+    {
         super.setup(context);
-        logger.info("!!!Setup " + result + "\n");
+        logger.info("Setup {}", result);
     }
 
     @Override
-    public void beginWindow(long windowId) {
-        logger.info("collector begin window {}\n", windowId);
+    public void beginWindow(long windowId)
+    {
         super.beginWindow(windowId);
     }
 
     @Override
-    public void beforeCheckpoint(long l) {
+    public void beforeCheckpoint(long l)
+    {
         logger.info("Before checkpointing -- {} : {}\n", l, result);
     }
 
@@ -44,6 +46,6 @@ public class Collector extends BaseOperator implements Operator.CheckpointNotifi
     @Override
     public void committed(long l)
     {
-        logger.info("--- Collecter committed window Id {}\n", l);
+        logger.info("Collecter committed window Id {}\n", l);
     }
 }
